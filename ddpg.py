@@ -81,19 +81,24 @@ class ReplayMemory(object):
     done_batch = [data[4] for data in batch_data]
 
     return state_batch, action_batch, reward_batch, next_state_batch, done_batch
-  
+
 class DDPG(object):
   def __init__(self, args, env, name="ddpg"):
     self.observation_space = env.observation_space.shape[0]
     self.num_actions = env.action_space.n
 
-    self.learning_rate = args.learning_rate
     self.memory_size = args.memory_size
     self.batch_size = args.batch_size
+    self.layer_norm = args.layer_norm
+    self.actor_lr = args.actor_lr
+    self.critic_lr = args.critic_lr
+    self.target_update = args.target_update
     self.gamma = args.gamma
     self.max_grad_norm = args.max_grad_norm
 
     self.replay_memory = ReplayMemory(self.memory_size)
+    self.actor = Actor(self.num_actions, layer_norm=self.layer_norm)
+    self.critic = Critic(layer_norm=self.layer_norm)
 
     self.add_placeholder()
 
